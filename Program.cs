@@ -5,7 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<ITaskService>(new InMemoryTaskService());
 var app = builder.Build();
 
-app.UseRewriter(new RewriteOptions().AddRedirect("tasks/(.*)", "todos/$1"));
+app.UseRewriter(new RewriteOptions()
+    .AddRewrite("^$", "version", skipRemainingRules: false)
+    .AddRedirect("tasks/(.*)", "todos/$1"));
 
 app.Use(async (context, next) =>
 {
@@ -55,7 +57,7 @@ app.MapDelete("/todos/{id}", (int id, ITaskService service) =>
   return TypedResults.NoContent();
 });
 
-app.MapGet("/version", () => "v7");
+app.MapGet("/version", () => "v8");
 
 app.Run();
 
